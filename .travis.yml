@@ -1,0 +1,7 @@
+language: python
+python: '3.6'
+install: pip install flake8
+script:
+- flake8 gesund.py
+- make docker-build
+- make docker-login docker-push
