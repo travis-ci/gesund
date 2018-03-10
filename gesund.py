@@ -67,7 +67,7 @@ def main(sysargs=sys.argv[:]):
     parser.add_argument(
         '-p', '--port', type=int,
         default=int(os.environ.get(
-            'NAT_HEALTH_CHECK_PORT',
+            'GESUND_PORT',
             os.environ.get('PORT', PORT)
         )),
         help='port number on which to listen'
@@ -75,7 +75,7 @@ def main(sysargs=sys.argv[:]):
     parser.add_argument(
         '-H', '--ping-host',
         default=os.environ.get(
-            'NAT_HEALTH_CHECK_PING_HOST',
+            'GESUND_PING_HOST',
             os.environ.get('PING_HOST', PING_HOST)
         ),
         help='host to ping when checking health'
