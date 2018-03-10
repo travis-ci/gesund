@@ -7,7 +7,9 @@ import argparse
 import os
 import subprocess
 import sys
+import time
 
+from threading import Thread
 from wsgiref.simple_server import make_server
 
 
@@ -62,6 +64,12 @@ class GesundApp(object):
 
 
 def main(sysargs=sys.argv[:]):
+    flusher_thread = Thread(
+        target=_stream_flusher, args=(sys.stdout, sys.stderr)
+    )
+    flusher_thread.daemon = True
+    flusher_thread.start()
+
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -106,6 +114,7 @@ def main(sysargs=sys.argv[:]):
         '', args.port,
         GesundApp(ping_host=args.ping_host)
     )
+
     print('Serving health check app on port {}...'.format(args.port))
     httpd.serve_forever()
 
@@ -113,6 +122,13 @@ def main(sysargs=sys.argv[:]):
 def _print_misc_file(filename, here=_HERE):
     with open(os.path.join(here, 'misc', filename)) as fp:
         print(fp.read())
+
+
+def _stream_flusher(*streams):
+    while True:
+        for stream in streams:
+            stream.flush()
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':

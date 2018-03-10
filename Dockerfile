@@ -1,8 +1,6 @@
 FROM python:3-alpine
-
-WORKDIR /usr/src/app
-
-COPY . .
-
+ENV PYTHONPATH /usr/src/app
+ENV PATH /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/src/app/bin
 EXPOSE 8192
-CMD ["python", "/usr/src/app/gesund.py"]
+COPY . /usr/src/app
+CMD ["gesund"]
