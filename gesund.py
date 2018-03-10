@@ -13,6 +13,7 @@ from wsgiref.simple_server import make_server
 
 PORT = 8192
 PING_HOST = 'www.google.com'
+_HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 class GesundApp(object):
@@ -80,7 +81,26 @@ def main(sysargs=sys.argv[:]):
         ),
         help='host to ping when checking health'
     )
+    parser.add_argument(
+        '--print-service',
+        action='store_true', default=False,
+        help='print the systemd service definition and exit'
+    )
+    parser.add_argument(
+        '--print-wrapper',
+        action='store_true', default=False,
+        help='print the service wrapper script and exit'
+    )
+
     args = parser.parse_args(sysargs[1:])
+
+    if args.print_service:
+        _print_misc_file('gesund.service')
+        return 0
+
+    if args.print_wrapper:
+        _print_misc_file('gesund-wrapper')
+        return 0
 
     httpd = make_server(
         '', args.port,
@@ -88,6 +108,11 @@ def main(sysargs=sys.argv[:]):
     )
     print('Serving health check app on port {}...'.format(args.port))
     httpd.serve_forever()
+
+
+def _print_misc_file(filename, here=_HERE):
+    with open(os.path.join(here, 'misc', filename)) as fp:
+        print(fp.read())
 
 
 if __name__ == '__main__':

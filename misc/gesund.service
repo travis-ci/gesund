@@ -1,0 +1,10 @@
+[Unit]
+Description=Gesund Health Check Thing
+
+[Service]
+ExecStart=/usr/local/bin/gesund-wrapper
+Restart=always
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target

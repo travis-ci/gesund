@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+
+main() {
+  local name="${1:-gesund}"
+
+  docker stop "${name}" &>/dev/null || true
+  docker rm -f "${name}" &>/dev/null || true
+
+  local run_dir=/var/tmp/travis-run.d
+  mkdir -p "${run_dir}"
+  local env_file="${run_dir}/${name}.env"
+  touch "${env_file}"
+  travis-combined-env gesund "${env_file}" 2>/dev/null || true
+
+  set -o allexport
+  # shellcheck source=/dev/null
+  source "${env_file}"
+  : "${GESUND_SELF_IMAGE:-travisci/gesund}"
+
+  exec docker run \
+    --rm \
+    --name "${name}" \
+    --env-file "${env_file}" \
+    -p "${GESUND_PUBLISH_PORT:-80}":8192 \
+    "${GESUND_SELF_IMAGE}"
+}
+
+main "$@"
