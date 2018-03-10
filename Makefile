@@ -1,5 +1,5 @@
 GIT_DESCRIBE ?= $(shell git describe --always --dirty --tags)
-DOCKER_TAG ?= travisci/nat-conntracker:$(GIT_DESCRIBE)
+DOCKER_TAG ?= travisci/gesund:$(GIT_DESCRIBE)
 
 DOCKER ?= docker
 
