@@ -12,12 +12,12 @@ main() {
   mkdir -p "${run_dir}"
   local env_file="${run_dir}/${name}.env"
   touch "${env_file}"
-  travis-combined-env gesund "${env_file}" 2>/dev/null || true
+  travis-tfw-combined-env gesund "${env_file}" 2>/dev/null || true
 
   set -o allexport
   # shellcheck source=/dev/null
   source "${env_file}"
-  : "${GESUND_SELF_IMAGE:-travisci/gesund}"
+  : "${GESUND_SELF_IMAGE:=travisci/gesund}"
 
   exec docker run \
     --rm \
