@@ -1,8 +1,9 @@
+# Service definition to be installed somewhere in the systemd load path
 [Unit]
 Description=Gesund Health Check Thing
 
 [Service]
-ExecStart=/usr/local/bin/gesund-wrapper
+ExecStart=/usr/sbin/%p-wrapper
 Restart=always
 WorkingDirectory=/
 

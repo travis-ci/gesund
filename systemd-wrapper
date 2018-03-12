@@ -5,19 +5,15 @@ set -o pipefail
 main() {
   local name="${1:-gesund}"
 
+  eval "$(tfw printenv gesund)"
+
+  : "${GESUND_SELF_IMAGE:=travisci/gesund}"
+
   docker stop "${name}" &>/dev/null || true
   docker rm -f "${name}" &>/dev/null || true
 
-  local run_dir=/var/tmp/travis-run.d
-  mkdir -p "${run_dir}"
-  local env_file="${run_dir}/${name}.env"
-  touch "${env_file}"
-  travis-tfw-combined-env gesund "${env_file}" 2>/dev/null || true
-
-  set -o allexport
-  # shellcheck source=/dev/null
-  source "${env_file}"
-  : "${GESUND_SELF_IMAGE:=travisci/gesund}"
+  local env_file
+  env_file="$(tfw writeenv gesund "${name}")"
 
   exec docker run \
     --rm \
