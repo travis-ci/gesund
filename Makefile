@@ -3,6 +3,23 @@ DOCKER_TAG ?= travisci/gesund:$(GIT_DESCRIBE)
 
 DOCKER ?= docker
 
+.PHONY: help
+help:
+	@echo Perhaps you would like:
+	@echo - deps
+	@echo - docker-build
+	@echo - docker-login
+	@echo - docker-push
+	@echo - lint
+
+.PHONY: deps
+deps:
+	pip install -r requirements.txt
+
+.PHONY: lint
+lint:
+	yapf -vv -i gesund.py
+
 .PHONY: docker-build
 docker-build:
 	$(DOCKER) build -t="$(DOCKER_TAG)" .

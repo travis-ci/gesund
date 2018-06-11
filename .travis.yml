@@ -2,8 +2,13 @@ language: python
 python: '3.6'
 cache:
   pip: true
-install: pip install flake8
+services:
+- docker
+- redis-server
+install:
+- make deps
 script:
-- flake8 gesund.py
+- make lint
+- git diff --exit-code
 - make docker-build
 - make docker-login docker-push
