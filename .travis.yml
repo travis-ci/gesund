@@ -7,6 +7,7 @@ services:
 - redis-server
 install:
 - make deps
+- make dev-deps
 script:
 - make lint
 - git diff --exit-code

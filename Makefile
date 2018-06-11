@@ -7,10 +7,15 @@ DOCKER ?= docker
 help:
 	@echo Perhaps you would like:
 	@echo - deps
+	@echo - dev-deps
 	@echo - docker-build
 	@echo - docker-login
 	@echo - docker-push
 	@echo - lint
+
+.PHONY: dev-deps
+dev-deps:
+	pip install -r dev-requirements.txt
 
 .PHONY: deps
 deps:
