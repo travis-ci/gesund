@@ -8,7 +8,7 @@ services:
 install:
 - make deps
 script:
-- make lint
+- make fmt
 - git diff --exit-code
 - make test
 - make docker-build

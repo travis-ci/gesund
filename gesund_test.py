@@ -1,5 +1,7 @@
 import gesund
 
+import multiprocessing
+import os
 import subprocess
 
 import pytest
@@ -35,6 +37,8 @@ def test_health_check_healthy(app, monkeypatch):
             args=[], returncode=0, stdout=b'oh hello', stderr=b'')
 
     monkeypatch.setattr(subprocess, 'run', mockrun)
+    monkeypatch.setattr(multiprocessing, 'cpu_count', lambda: 1)
+    monkeypatch.setattr(os, 'getloadavg', lambda: (0.1, 0.1, 0.1))
 
     resp = app({'PATH_INFO': '/health-check'}, sr_func)
     assert start_response['status'] == '200 OK'
@@ -42,7 +46,7 @@ def test_health_check_healthy(app, monkeypatch):
     assert resp[0] == b'ok\n'
 
 
-def test_health_check_unhealthy(app, monkeypatch):
+def test_health_check_unhealthy_ping(app, monkeypatch):
     start_response = {'status': '', 'headers': ()}
 
     def sr_func(status, headers):
@@ -54,6 +58,29 @@ def test_health_check_unhealthy(app, monkeypatch):
             args=[], returncode=1, stdout=b'', stderr=b'ugh')
 
     monkeypatch.setattr(subprocess, 'run', mockrun)
+    monkeypatch.setattr(multiprocessing, 'cpu_count', lambda: 1)
+    monkeypatch.setattr(os, 'getloadavg', lambda: (0.1, 0.1, 0.1))
+
+    resp = app({'PATH_INFO': '/health-check'}, sr_func)
+    assert start_response['status'] == '503 Internal Server Error'
+    assert len(resp) > 0
+    assert resp[0] == b'oh no\n'
+
+
+def test_health_check_unhealthy_load(app, monkeypatch):
+    start_response = {'status': '', 'headers': ()}
+
+    def sr_func(status, headers):
+        start_response['status'] = status
+        start_response['headers'] = headers
+
+    def mockrun(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args=[], returncode=0, stdout=b'oh hello', stderr=b'')
+
+    monkeypatch.setattr(subprocess, 'run', mockrun)
+    monkeypatch.setattr(multiprocessing, 'cpu_count', lambda: 1)
+    monkeypatch.setattr(os, 'getloadavg', lambda: (9.9, 9.9, 9.9))
 
     resp = app({'PATH_INFO': '/health-check'}, sr_func)
     assert start_response['status'] == '503 Internal Server Error'

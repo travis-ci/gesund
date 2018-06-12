@@ -4,7 +4,7 @@ DOCKER_TAG ?= travisci/gesund:$(GIT_DESCRIBE)
 DOCKER ?= docker
 
 .PHONY: test
-test: lint
+test: fmt
 	pytest -vv --cov=gesund
 
 .PHONY: coverage
@@ -17,8 +17,8 @@ htmlcov/index.html: .coverage
 deps:
 	pip install -r requirements.txt
 
-.PHONY: lint
-lint:
+.PHONY: fmt
+fmt:
 	yapf -vv -i $(shell git ls-files '*.py')
 
 .PHONY: docker-build
