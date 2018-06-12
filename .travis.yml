@@ -7,9 +7,9 @@ services:
 - redis-server
 install:
 - make deps
-- make dev-deps
 script:
 - make lint
 - git diff --exit-code
+- make test
 - make docker-build
 - make docker-login docker-push

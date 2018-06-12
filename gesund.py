@@ -17,13 +17,14 @@ PING_HOST = 'www.google.com'
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-class GesundApp(object):
-    def __init__(self, **check_opts):
-        self._check_opts = check_opts
+class GesundApp:
+    def __init__(self, ping_host=PING_HOST, redis_url=None):
+        self._ping_host = ping_host
         self._checks = (self._can_ping_host, self._redis_reports_healthy)
-        if check_opts.get('redis_url') is not None:
+        self._redis_conn = None
+        if redis_url is not None:
             print('setting up redis connection', file=sys.stderr)
-            self._redis_conn = redis.from_url(check_opts['redis_url'])
+            self._redis_conn = redis.from_url(redis_url)
 
     def __call__(self, environ, start_response):
         resp = self._build_resp(start_response)
@@ -48,15 +49,15 @@ class GesundApp(object):
             return resp('503 Internal Server Error', 'oh no\n')
 
     def _can_ping_host(self):
-        job = subprocess.Popen(
-            ['ping', '-c', '1', self._check_opts['ping_host']],
+        res = subprocess.run(
+            ['ping', '-c', '1', self._ping_host],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        stdout, stderr = job.communicate()
-        if job.returncode != 0:
-            print(stderr, file=sys.stderr)
+            stderr=subprocess.PIPE,
+            timeout=5)
+        if res.returncode != 0:
+            print(res.stderr, file=sys.stderr)
             return False, ''
-        return True, stdout.decode('utf-8')
+        return True, res.stdout.decode('utf-8')
 
     def _redis_reports_healthy(self):
         if self._redis_conn is None:

@@ -3,19 +3,15 @@ DOCKER_TAG ?= travisci/gesund:$(GIT_DESCRIBE)
 
 DOCKER ?= docker
 
-.PHONY: help
-help:
-	@echo Perhaps you would like:
-	@echo - deps
-	@echo - dev-deps
-	@echo - docker-build
-	@echo - docker-login
-	@echo - docker-push
-	@echo - lint
+.PHONY: test
+test: lint
+	pytest -vv --cov=gesund
 
-.PHONY: dev-deps
-dev-deps:
-	pip install -r dev-requirements.txt
+.PHONY: coverage
+coverage: htmlcov/index.html
+
+htmlcov/index.html: .coverage
+	coverage html
 
 .PHONY: deps
 deps:
@@ -23,7 +19,7 @@ deps:
 
 .PHONY: lint
 lint:
-	yapf -vv -i gesund.py
+	yapf -vv -i $(shell git ls-files '*.py')
 
 .PHONY: docker-build
 docker-build:

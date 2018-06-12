@@ -4,5 +4,5 @@ ENV PATH /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/app/bin
 EXPOSE 8192
 COPY . /app
 WORKDIR /app
-RUN pip install -r requirements.txt
+RUN pip install -r deploy-requirements.txt
 CMD ["gesund"]
