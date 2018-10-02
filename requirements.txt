@@ -1,6 +1,7 @@
 redis>=2.10
 
 codecov>=2.0
+flake8>=3.5.0
 pytest-cov>=2.0
 pytest>=3.4
 yapf>=0.22
