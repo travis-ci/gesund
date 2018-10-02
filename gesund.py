@@ -10,6 +10,8 @@ import subprocess
 import sys
 import time
 
+import redis
+
 from threading import Thread
 from wsgiref.simple_server import make_server
 
