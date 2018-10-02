@@ -21,6 +21,10 @@ deps:
 fmt:
 	yapf -vv -i $(shell git ls-files '*.py')
 
+.PHONY: lint
+lint:
+	flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+
 .PHONY: docker-build
 docker-build:
 	$(DOCKER) build -t="$(DOCKER_TAG)" .
